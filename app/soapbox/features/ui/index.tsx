@@ -33,12 +33,10 @@ import DefaultPage from 'soapbox/pages/default_page';
 // import GroupPage from 'soapbox/pages/group_page';
 import HomePage from 'soapbox/pages/home_page';
 import ProfilePage from 'soapbox/pages/profile_page';
-import RemoteInstancePage from 'soapbox/pages/remote_instance_page';
 import StatusPage from 'soapbox/pages/status_page';
 import { getAccessToken, getVapidKey } from 'soapbox/utils/auth';
 import { isStandalone } from 'soapbox/utils/state';
 // import GroupSidebarPanel from '../groups/sidebar_panel';
-import Enlistment from '../enlistment/enlistment';
 
 import BackgroundShapes from './components/background_shapes';
 import Navbar from './components/navbar';
@@ -114,6 +112,7 @@ import {
   TestTimeline,
   LogoutPage,
   AuthTokenList,
+  ProfileFields,
 } from './util/async-components';
 import { WrappedRoute } from './util/react_router_helpers';
 
@@ -183,25 +182,13 @@ const SwitchingColumnsArea: React.FC = ({ children }) => {
       */}
       {features.federating && <WrappedRoute path='/timeline/local' exact page={HomePage} component={CommunityTimeline} content={children} publicRoute />}
       {features.federating && <WrappedRoute path='/timeline/fediverse' exact page={HomePage} component={PublicTimeline} content={children} publicRoute />}
-      {features.federating && <WrappedRoute path='/timeline/:instance' exact page={RemoteInstancePage} component={RemoteTimeline} content={children} />}
+      {features.federating && <WrappedRoute path='/timeline/:instance' exact page={HomePage} component={RemoteTimeline} content={children} />}
 
       {features.conversations && <WrappedRoute path='/conversations' page={DefaultPage} component={Conversations} content={children} />}
       {features.directTimeline && <WrappedRoute path='/messages' page={DefaultPage} component={DirectTimeline} content={children} />}
       {(features.conversations && !features.directTimeline) && (
         <WrappedRoute path='/messages' page={DefaultPage} component={Conversations} content={children} />
       )}
-
-      {/* Gab groups */}
-      {/*
-      <WrappedRoute path='/groups' exact page={GroupsPage} component={Groups} content={children} componentParams={{ activeTab: 'featured' }} />
-      <WrappedRoute path='/groups/create' page={GroupsPage} component={Groups} content={children} componentParams={{ showCreateForm: true, activeTab: 'featured' }} />
-      <WrappedRoute path='/groups/browse/member' page={GroupsPage} component={Groups} content={children} componentParams={{ activeTab: 'member' }} />
-      <WrappedRoute path='/groups/browse/admin' page={GroupsPage} component={Groups} content={children} componentParams={{ activeTab: 'admin' }} />
-      <WrappedRoute path='/groups/:id/members' page={GroupPage} component={GroupMembers} content={children} />
-      <WrappedRoute path='/groups/:id/removed_accounts' page={GroupPage} component={GroupRemovedAccounts} content={children} />
-      <WrappedRoute path='/groups/:id/edit' page={GroupPage} component={GroupEdit} content={children} />
-      <WrappedRoute path='/groups/:id' page={GroupPage} component={GroupTimeline} content={children} />
-      */}
 
       {/* Mastodon web routes */}
       <Redirect from='/web/:path1/:path2/:path3' to='/:path1/:path2/:path3' />
@@ -272,13 +259,14 @@ const SwitchingColumnsArea: React.FC = ({ children }) => {
       {features.federating && <WrappedRoute path='/domain_blocks' page={DefaultPage} component={DomainBlocks} content={children} />}
       <WrappedRoute path='/mutes' page={DefaultPage} component={Mutes} content={children} />
       {features.filters && <WrappedRoute path='/filters' page={DefaultPage} component={Filters} content={children} />}
-      <WrappedRoute path='/@:username' publicRoute exact component={AccountTimeline} page={ProfilePage} content={children} />
+      <WrappedRoute path='/@:username' publicRoute={!authenticatedProfile} exact component={AccountTimeline} page={ProfilePage} content={children} />
       <WrappedRoute path='/@:username/with_replies' publicRoute={!authenticatedProfile} component={AccountTimeline} page={ProfilePage} content={children} componentParams={{ withReplies: true }} />
       <WrappedRoute path='/@:username/followers' publicRoute={!authenticatedProfile} component={Followers} page={ProfilePage} content={children} />
       <WrappedRoute path='/@:username/following' publicRoute={!authenticatedProfile} component={Following} page={ProfilePage} content={children} />
       <WrappedRoute path='/@:username/media' publicRoute={!authenticatedProfile} component={AccountGallery} page={ProfilePage} content={children} />
       <WrappedRoute path='/@:username/tagged/:tag' exact component={AccountTimeline} page={ProfilePage} content={children} />
       <WrappedRoute path='/@:username/favorites' component={FavouritedStatuses} page={ProfilePage} content={children} />
+      <WrappedRoute path='/@:username/about' component={ProfileFields} page={ProfilePage} content={children} />
       <WrappedRoute path='/@:username/pins' component={PinnedStatuses} page={ProfilePage} content={children} />
       <WrappedRoute path='/@:username/posts/:statusId' publicRoute exact page={StatusPage} component={Status} content={children} />
       <Redirect from='/@:username/:statusId' to='/@:username/posts/:statusId' />
@@ -655,8 +643,6 @@ const UI: React.FC = ({ children }) => {
 
         <div className='z-10 flex flex-col'>
           <Navbar />
-          <Enlistment />
-
           <Layout>
             <Layout.Sidebar>
               {!standalone && <SidebarNavigation />}

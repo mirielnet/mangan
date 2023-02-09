@@ -28,7 +28,6 @@ const messages = defineMessages({
 });
 
 const defaultSettings = ImmutableMap({
-  enlisted: false, 
   onboarded: false,
   skinTone: 1,
   reduceMotion: false,
@@ -133,6 +132,7 @@ const defaultSettings = ImmutableMap({
   }),
 
   public: ImmutableMap({
+    bubble: true,
     shows: ImmutableMap({
       reblog: true,
       reply: true,

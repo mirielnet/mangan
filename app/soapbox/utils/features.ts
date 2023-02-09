@@ -68,7 +68,6 @@ const getInstanceFeatures = (instance: Instance) => {
   const v = parseVersion(instance.version);
   const features = instance.pleroma.getIn(['metadata', 'features'], ImmutableList()) as ImmutableList<string>;
   const federation = instance.pleroma.getIn(['metadata', 'federation'], ImmutableMap()) as ImmutableMap<string, any>;
-
   return {
     /**
      * Can view and manage ActivityPub aliases through the API.
@@ -199,16 +198,24 @@ const getInstanceFeatures = (instance: Instance) => {
     ]),
 
     /**
+     * Can display a timeline of a list of handpicked instaces statuses.
+     * @see GET /api/v1/timelines/bubble
+     */
+    bubbleTimeline: any([
+      v.software === AKKOMA,
+    ]),
+
+    /**
      * Pleroma chats API.
      * @see {@link https://docs.pleroma.social/backend/development/API/chats/}
      */
-    chats: (v.software === PLEROMA || v.software === AKKOMA) && gte(v.version, '2.1.0'),
+    chats: (v.software === PLEROMA || features.includes('pleroma_chat_messages')) && gte(v.version, '2.1.0'),
 
     /**
      * Paginated chats API.
      * @see GET /api/v2/chats
      */
-    chatsV2: (v.software === PLEROMA || v.software === AKKOMA) && gte(v.version, '2.3.0'),
+    chatsV2: (v.software === PLEROMA || features.includes('pleroma_chat_messages')) && gte(v.version, '2.3.0'),
 
     /**
      * Mastodon's newer solution for direct messaging.
@@ -276,7 +283,7 @@ const getInstanceFeatures = (instance: Instance) => {
      */
     explicitAddressing: any([
       // Keep as comment for the day mastodon will show things correctly
-      // https://github.com/Cl0v1s/mangane/issues/27
+      // https://github.com/BDX-town/Mangane/issues/27
       // v.software === PLEROMA && gte(v.version, '1.0.0'),
       v.software === TRUTHSOCIAL,
     ]),
@@ -361,6 +368,12 @@ const getInstanceFeatures = (instance: Instance) => {
       v.software === MASTODON && gte(v.compatVersion, '2.1.0'),
       (v.software === PLEROMA || v.software === AKKOMA) && gte(v.version, '0.9.9'),
     ]),
+
+    /**
+     * Can set status visibility to local-only
+     * @see {@link https://docs.akkoma.dev/stable/development/API/differences_in_mastoapi_responses/#statuses}
+     */
+    localOnlyPrivacy: v.software === AKKOMA,
 
     /**
      * Can perform moderation actions with account and reports.
@@ -473,6 +486,8 @@ const getInstanceFeatures = (instance: Instance) => {
       (v.software === PLEROMA || v.software === AKKOMA),
     ]),
 
+
+
     /**
      * Can display a timeline of all known public statuses.
      * Local and Fediverse timelines both use this feature.
@@ -482,6 +497,8 @@ const getInstanceFeatures = (instance: Instance) => {
       v.software === MASTODON,
       (v.software === PLEROMA || v.software === AKKOMA),
     ]),
+
+
 
     /**
      * Ability to quote posts in statuses.
@@ -534,7 +551,8 @@ const getInstanceFeatures = (instance: Instance) => {
      */
     scheduledStatuses: any([
       v.software === MASTODON && gte(v.version, '2.7.0'),
-      (v.software === PLEROMA || v.software === AKKOMA),
+      // v.software === PLEROMA, disable for new as scheduled statuses on Pleroma doesnt work
+      v.software === AKKOMA,
     ]),
 
     /**
@@ -605,6 +623,14 @@ const getInstanceFeatures = (instance: Instance) => {
       v.software === MASTODON && gte(v.compatVersion, '3.4.0'),
       v.software === TRUTHSOCIAL,
       features.includes('v2_suggestions'),
+    ]),
+
+    /**
+     * Can translate statuses
+     * @see GET /api/v1/statuses/:id/translations/:language
+     */
+    translations: any([
+      v.software === AKKOMA && features.find((f) => f === 'akkoma:machine_translation'),
     ]),
 
     /**

@@ -1,19 +1,19 @@
 {
   "name": "mangane-fe",
-  "version": "hot-snowleopard",
+  "version": "wrestling-red-panda",
   "displayName": "Mangane",
   "description": "Devanture pour https://bdx.town",
   "homepage": "https://bdx.town",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Cl0v1s/mangane"
+    "url": "https://github.com/BDX-town/Mangane"
   },
   "keywords": [
     "fediverse",
     "pleroma"
   ],
   "bugs": {
-    "url": "https://github.com/Cl0v1s/mangane/issues"
+    "url": "https://github.com/BDX-town/Mangane/issues"
   },
   "scripts": {
     "start": "npx webpack-dev-server",
@@ -50,6 +50,8 @@
     "@babel/preset-react": "^7.17.12",
     "@babel/preset-typescript": "^7.17.12",
     "@babel/runtime": "^7.18.3",
+    "@emoji-mart/data": "^1.1.1",
+    "@emoji-mart/react": "^1.1.0",
     "@fontsource/inter": "^4.5.1",
     "@fontsource/roboto": "^4.5.0",
     "@gamestdio/websocket": "^0.3.2",
@@ -114,7 +116,7 @@
     "detect-passive-events": "^2.0.0",
     "dotenv": "^8.0.0",
     "emoji-datasource": "5.0.0",
-    "emoji-mart": "npm:emoji-mart-lazyload",
+    "emoji-mart": "^5.4.0",
     "entities": "^3.0.1",
     "es6-symbol": "^3.1.1",
     "escape-html": "^1.0.3",

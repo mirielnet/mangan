@@ -24,11 +24,13 @@ import {
   revealStatus,
   fetchStatusWithContext,
   fetchNext,
+  translateStatus,
 } from 'soapbox/actions/statuses';
 import MissingIndicator from 'soapbox/components/missing_indicator';
 import PullToRefresh from 'soapbox/components/pull-to-refresh';
 import ScrollableList from 'soapbox/components/scrollable_list';
 import StatusActionBar from 'soapbox/components/status-action-bar';
+import Sticky from 'soapbox/components/sticky';
 import SubNavigation from 'soapbox/components/sub_navigation';
 import Tombstone from 'soapbox/components/tombstone';
 import { Column, Stack } from 'soapbox/components/ui';
@@ -49,6 +51,7 @@ import type {
   Attachment as AttachmentEntity,
   Status as StatusEntity,
 } from 'soapbox/types/entities';
+
 
 const messages = defineMessages({
   title: { id: 'status.title', defaultMessage: '@{username}\'s Post' },
@@ -306,6 +309,10 @@ const Thread: React.FC<IThread> = (props) => {
     handleToggleMediaVisibility();
   };
 
+  const handleTranslate = React.useCallback((status: StatusEntity, language: string) => {
+    dispatch(translateStatus(status.id, language));
+  }, []);
+
   const handleMoveUp = (id: string) => {
     if (id === status?.id) {
       _selectChild(ancestorsIds.size - 1);
@@ -482,6 +489,7 @@ const Thread: React.FC<IThread> = (props) => {
             showMedia={showMedia}
             onToggleMediaVisibility={handleToggleMediaVisibility}
             onOpenCompareHistoryModal={handleOpenCompareHistoryModal}
+            onTranslate={handleTranslate}
           />
 
           <hr className='mb-2 dark:border-slate-600' />
@@ -515,9 +523,11 @@ const Thread: React.FC<IThread> = (props) => {
 
   return (
     <Column label={intl.formatMessage(titleMessage, { username })} transparent withHeader={false}>
-      <div className='px-4 pt-4 sm:p-0'>
-        <SubNavigation message={intl.formatMessage(titleMessage, { username })} />
-      </div>
+      <Sticky stickyClassName='sm:hidden w-full shadow-lg before:-z-10 before:bg-gradient-sm before:w-full before:h-full before:absolute before:top-0 before:left-0  bg-white dark:bg-slate-900'>
+        <div className='px-4 pt-4 sm:p-0'>
+          <SubNavigation message={intl.formatMessage(titleMessage, { username })} />
+        </div>
+      </Sticky>
 
       <PullToRefresh onRefresh={handleRefresh}>
         <Stack space={2}>

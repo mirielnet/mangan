@@ -81,10 +81,13 @@ const messages = defineMessages({
   display_media_hide_all: { id: 'preferences.fields.display_media.hide_all', defaultMessage: 'Always hide media' },
   display_media_show_all: { id: 'preferences.fields.display_media.show_all', defaultMessage: 'Always show media' },
   privacy_public: { id: 'preferences.options.privacy_public', defaultMessage: 'Public' },
+  privacy_local: { id: 'preferences.options.privacy_local', defaultMessage: 'Local-only' },
   privacy_unlisted: { id: 'preferences.options.privacy_unlisted', defaultMessage: 'Unlisted' },
   privacy_followers_only: { id: 'preferences.options.privacy_followers_only', defaultMessage: 'Followers-only' },
   content_type_plaintext: { id: 'preferences.options.content_type_plaintext', defaultMessage: 'Plain text' },
   content_type_markdown: { id: 'preferences.options.content_type_markdown', defaultMessage: 'Markdown' },
+  bubble_timeline_label: { id: 'preferences.options.bubble_timeline_label', defaultMessage: 'Curated timeline' },
+  bubble_timeline_hint: { id: 'preferences.options.bubble_timeline_hint', defaultMessage: 'Replace the fediverse timeline with the Akkoma bubble timeline showing public statuses from a list of handpicked instances.' },
 });
 
 const Preferences = () => {
@@ -109,6 +112,7 @@ const Preferences = () => {
 
   const defaultPrivacyOptions = React.useMemo(() => ({
     public: intl.formatMessage(messages.privacy_public),
+    ...(features.localOnlyPrivacy ? { local: intl.formatMessage(messages.privacy_local) } : {}),
     unlisted: intl.formatMessage(messages.privacy_unlisted),
     private: intl.formatMessage(messages.privacy_followers_only),
   }), []);
@@ -121,6 +125,17 @@ const Preferences = () => {
   return (
     <Form>
       <List>
+        {
+          features.bubbleTimeline && (
+            <ListItem
+              label={intl.formatMessage(messages.bubble_timeline_label)}
+              hint={intl.formatMessage(messages.bubble_timeline_hint)}
+            >
+              <SettingToggle settings={settings} settingPath={['public', 'bubble']} onChange={onToggleChange} />
+            </ListItem>
+          )
+        }
+
         <ListItem
           label={<FormattedMessage id='home.column_settings.show_reblogs' defaultMessage='Show reposts' />}
           hint={<FormattedMessage id='preferences.hints.feed' defaultMessage='In your home feed' />}
@@ -203,10 +218,6 @@ const Preferences = () => {
 
         <ListItem label={<FormattedMessage id='preferences.fields.autoload_more_label' defaultMessage='Automatically load more items when scrolled to the bottom of the page' />}>
           <SettingToggle settings={settings} settingPath={['autoloadMore']} onChange={onToggleChange} />
-        </ListItem>
-
-        <ListItem label={<FormattedMessage id='preferences.fields.enlisted' defaultMessage='Ignore onboarding' />}>
-          <SettingToggle settings={settings} settingPath={['enlisted']} onChange={onToggleChange} />
         </ListItem>
       </List>
     </Form>

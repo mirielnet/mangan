@@ -84,13 +84,15 @@ export const SoapboxConfigRecord = ImmutableRecord({
   ads: ImmutableList<Ad>(),
   appleAppId: null,
   authProvider: '',
+  customRegProvider: '',
+  customRegUrl: '',
   logo: '',
   logoDarkMode: null,
   banner: '',
-  brandColor: '', // Empty
-  accentColor: '',
+  brandColor: '#F24173',
+  accentColor: '#D00A42',
   colors: ImmutableMap(),
-  copyright: `♥${new Date().getFullYear()}. Copying is an act of love. Please copy and share.`,
+  copyright: `🕶 ${new Date().getFullYear()}. Soyons de bons humains.`,
   customCss: ImmutableList<string>(),
   defaultSettings: ImmutableMap<string, any>(),
   extensions: ImmutableMap(),
@@ -123,6 +125,7 @@ export const SoapboxConfigRecord = ImmutableRecord({
   singleUserModeProfile: '',
   linkFooterMessage: '',
   links: ImmutableMap<string, string>(),
+  homeDescription: '',
 }, 'SoapboxConfig');
 
 type SoapboxConfigMap = ImmutableMap<string, any>;

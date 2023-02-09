@@ -11,7 +11,7 @@ import Account from 'soapbox/components/account';
 import SiteLogo from 'soapbox/components/site-logo';
 import { Stack } from 'soapbox/components/ui';
 import ProfileStats from 'soapbox/features/ui/components/profile_stats';
-import { useAppSelector, useFeatures } from 'soapbox/hooks';
+import { useAppSelector, useFeatures, useLogo } from 'soapbox/hooks';
 import { makeGetAccount, makeGetOtherAccounts } from 'soapbox/selectors';
 
 import { HStack, Icon, IconButton, Text } from './ui';
@@ -25,10 +25,6 @@ const messages = defineMessages({
   follows: { id: 'account.follows', defaultMessage: 'Follows' },
   profile: { id: 'account.profile', defaultMessage: 'Profile' },
   preferences: { id: 'navigation_bar.preferences', defaultMessage: 'Preferences' },
-  blocks: { id: 'navigation_bar.blocks', defaultMessage: 'Blocked users' },
-  domainBlocks: { id: 'navigation_bar.domain_blocks', defaultMessage: 'Hidden domains' },
-  mutes: { id: 'navigation_bar.mutes', defaultMessage: 'Muted users' },
-  filters: { id: 'navigation_bar.filters', defaultMessage: 'Muted words' },
   soapboxConfig: { id: 'navigation_bar.soapbox_config', defaultMessage: 'Soapbox config' },
   importData: { id: 'navigation_bar.import_data', defaultMessage: 'Import data' },
   accountMigration: { id: 'navigation_bar.account_migration', defaultMessage: 'Move account' },
@@ -40,6 +36,7 @@ const messages = defineMessages({
   developers: { id: 'navigation.developers', defaultMessage: 'Developers' },
   addAccount: { id: 'profile_dropdown.add_account', defaultMessage: 'Add an existing account' },
   direct: { id: 'column.direct', defaultMessage: 'Direct messages' },
+  directory: { id: 'navigation_bar.profile_directory', defaultMessage: 'Profile directory' },
 });
 
 interface ISidebarLink {
@@ -82,6 +79,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const intl = useIntl();
   const dispatch = useDispatch();
 
+  const logo = useLogo();
   const features = useFeatures();
   const getAccount = makeGetAccount();
   const instance = useAppSelector((state) => state.instance);
@@ -91,6 +89,8 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
   const sidebarOpen = useAppSelector((state) => state.sidebar.sidebarOpen);
   const settings = useAppSelector((state) => getSettings(state));
   const followRequestsCount = useAppSelector((state) => state.user_lists.follow_requests.items.count());
+
+  const bubbleTimeline = features.bubbleTimeline && settings.getIn(['public', 'bubble']);
 
   const closeButtonRef = React.useRef(null);
 
@@ -218,7 +218,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
 
 
                 <SidebarLink
-                  to={`/messages`}
+                  to={'/messages'}
                   icon={require('@tabler/icons/mail.svg')}
                   text={intl.formatMessage(messages.direct)}
                   onClick={onClose}
@@ -242,6 +242,15 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   />
                 )}
 
+                {features.profileDirectory && (
+                  <SidebarLink
+                    to='/directory'
+                    icon={require('@tabler/icons/folder.svg')}
+                    text={intl.formatMessage(messages.directory)}
+                    onClick={onClose}
+                  />
+                )}
+
                 {settings.get('isDeveloper') && (
                   <SidebarLink
                     to='/developers'
@@ -256,7 +265,7 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
 
                   <SidebarLink
                     to='/timeline/local'
-                    icon={features.federating ? require('icons/bdx.svg') : require('@tabler/icons/world.svg')}
+                    icon={features.federating ? logo : require('@tabler/icons/world.svg')}
                     text={features.federating ? instance.title : <FormattedMessage id='tabs_bar.all' defaultMessage='All' />}
                     onClick={onClose}
                   />
@@ -264,8 +273,8 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                   {features.federating && (
                     <SidebarLink
                       to='/timeline/fediverse'
-                      icon={require('icons/fediverse.svg')}
-                      text={<FormattedMessage id='tabs_bar.fediverse' defaultMessage='Fediverse' />}
+                      icon={!bubbleTimeline ? require('icons/fediverse.svg') : require('@tabler/icons/hexagon.svg')}
+                      text={<FormattedMessage id='tabs_bar.fediverse' defaultMessage='Explore' />}
                       onClick={onClose}
                     />
                   )}
@@ -274,46 +283,14 @@ const SidebarMenu: React.FC = (): JSX.Element | null => {
                 <hr />
 
                 {
-                  (account.locked || followRequestsCount > 0)  && 
+                  (account.locked || followRequestsCount > 0)  &&
                     <SidebarLink
-                    to='/follow_requests'
-                    icon={require('@tabler/icons/user-plus.svg')}
-                    text={intl.formatMessage(messages.follow_requests)}
-                    onClick={onClose}
-                  />
+                      to='/follow_requests'
+                      icon={require('@tabler/icons/user-plus.svg')}
+                      text={intl.formatMessage(messages.follow_requests)}
+                      onClick={onClose}
+                    />
                 }
-
-                <SidebarLink
-                  to='/blocks'
-                  icon={require('@tabler/icons/ban.svg')}
-                  text={intl.formatMessage(messages.blocks)}
-                  onClick={onClose}
-                />
-
-                <SidebarLink
-                  to='/mutes'
-                  icon={require('@tabler/icons/circle-x.svg')}
-                  text={intl.formatMessage(messages.mutes)}
-                  onClick={onClose}
-                />
-
-                {features.federating && (
-                  <SidebarLink
-                    to='/domain_blocks'
-                    icon={require('@tabler/icons/ban.svg')}
-                    text={intl.formatMessage(messages.domainBlocks)}
-                    onClick={onClose}
-                  />
-                )}
-
-                {features.filters && (
-                  <SidebarLink
-                    to='/filters'
-                    icon={require('@tabler/icons/filter.svg')}
-                    text={intl.formatMessage(messages.filters)}
-                    onClick={onClose}
-                  />
-                )}
 
                 <SidebarLink
                   to='/settings/preferences'

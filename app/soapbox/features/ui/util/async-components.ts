@@ -1,7 +1,3 @@
-export function EmojiPicker() {
-  return import(/* webpackChunkName: "emoji_picker" */'../../emoji/emoji_picker');
-}
-
 export function Notifications() {
   return import(/* webpackChunkName: "features/notifications" */'../../notifications');
 }
@@ -364,6 +360,10 @@ export function ProfileInfoPanel() {
 
 export function ProfileMediaPanel() {
   return import(/* webpackChunkName: "features/account_gallery" */'../components/profile_media_panel');
+}
+
+export function ProfileFields() {
+  return import(/* webpackChunkName: "features/favourited_statuses" */'../../profile_fields');
 }
 
 export function ProfileFieldsPanel() {

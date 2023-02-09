@@ -7,8 +7,9 @@ import {
   markChatRead,
 } from 'soapbox/actions/chats';
 import { uploadMedia } from 'soapbox/actions/media';
-import IconButton from 'soapbox/components/icon_button';
+import { IconButton } from 'soapbox/components/ui';
 import UploadProgress from 'soapbox/components/upload-progress';
+import EmojiPickerDropdown from 'soapbox/containers/emoji_picker_dropdown_container';
 import UploadButton from 'soapbox/features/compose/components/upload_button';
 import { useAppSelector, useAppDispatch } from 'soapbox/hooks';
 import { truncateFilename } from 'soapbox/utils/media';
@@ -140,6 +141,14 @@ const ChatBox: React.FC<IChatBox> = ({ chatId, onSetInputRef, autosize }) => {
     });
   };
 
+  const handleEmojiPick = React.useCallback((data) => {
+    if (data.custom) {
+      setContent(content + ' ' + data.native + ' ');
+    } else {
+      setContent(content + data.native);
+    }
+  }, [content]);
+
   const renderAttachment = () => {
     if (!attachment) return null;
 
@@ -158,40 +167,47 @@ const ChatBox: React.FC<IChatBox> = ({ chatId, onSetInputRef, autosize }) => {
     );
   };
 
-  const renderActionButton = () => {
-    return canSubmit() ? (
-      <IconButton
-        src={require('@tabler/icons/send.svg')}
-        title={intl.formatMessage(messages.send)}
-        onClick={sendMessage}
-      />
-    ) : (
-      <UploadButton onSelectFile={handleFiles} resetFileKey={resetFileKey} />
-    );
-  };
-
   if (!chatMessageIds) return null;
 
   return (
     <div className='chat-box' onMouseOver={handleHover}>
-      <ChatMessageList chatMessageIds={chatMessageIds} chatId={chatId} autosize />
-      {renderAttachment()}
-      {isUploading && (
-        <UploadProgress progress={uploadProgress * 100} />
-      )}
-      <div className='chat-box__actions simple_form'>
-        <div className='chat-box__send'>
-          {renderActionButton()}
+      <ChatMessageList chatMessageIds={chatMessageIds} chatId={chatId} />
+      <div className='chat-box__actions'>
+        <div>
+          {renderAttachment()}
+          {isUploading && (
+            <UploadProgress progress={uploadProgress * 100} />
+          )}
         </div>
-        <textarea
-          rows={1}
-          placeholder={intl.formatMessage(messages.placeholder)}
-          onKeyDown={handleKeyDown}
-          onChange={handleContentChange}
-          onPaste={handlePaste}
-          value={content}
-          ref={setInputRef}
-        />
+        <div className='flex items-center gap-2'>
+          <textarea
+            className='border'
+            rows={1}
+            placeholder={intl.formatMessage(messages.placeholder)}
+            onKeyDown={handleKeyDown}
+            onChange={handleContentChange}
+            onPaste={handlePaste}
+            value={content}
+            ref={setInputRef}
+          />
+          <div className='chat-box__send flex items-center gap-1'>
+            <EmojiPickerDropdown
+              onPickEmoji={handleEmojiPick}
+            />
+            {
+              canSubmit() ? (
+                <IconButton
+                  className='text-gray-400 hover:text-gray-600'
+                  src={require('@tabler/icons/send.svg')}
+                  title={intl.formatMessage(messages.send)}
+                  onClick={sendMessage}
+                />
+              ) : (
+                <UploadButton onSelectFile={handleFiles} resetFileKey={resetFileKey} />
+              )
+            }
+          </div>
+        </div>
       </div>
     </div>
   );
