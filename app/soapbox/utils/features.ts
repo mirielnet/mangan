@@ -95,7 +95,7 @@ const getInstanceFeatures = (instance: Instance) => {
      * Ability to pin other accounts on one's profile.
      * @see POST /api/v1/accounts/:id/pin
      * @see POST /api/v1/accounts/:id/unpin
-     * @see GET /api/v1/pleroma/accounts/:id/endorsements
+     * @see GET  /api/v1/endorsements
      */
     accountEndorsements: (v.software === PLEROMA || v.software === AKKOMA) && gte(v.version, '2.4.50'),
 
@@ -165,6 +165,13 @@ const getInstanceFeatures = (instance: Instance) => {
      * @see {@link https://docs.joinmastodon.org/methods/announcements/}
      */
     announcementsReactions: v.software === MASTODON && gte(v.compatVersion, '3.1.0'),
+
+    /**
+     * Pleroma backups.
+     * @see GET /api/v1/pleroma/backups
+     * @see POST /api/v1/pleroma/backups
+     */
+    backups: v.software === PLEROMA || v.software === AKKOMA,
 
     /**
      * Set your birthday and view upcoming birthdays.
@@ -288,6 +295,9 @@ const getInstanceFeatures = (instance: Instance) => {
       v.software === TRUTHSOCIAL,
     ]),
 
+    /** Whether to allow exporting follows/blocks/mutes to CSV by paginating the API. */
+    exportData: true,
+
     /** Whether the accounts who favourited or emoji-reacted to a status can be viewed through the API. */
     exposableReactions: any([
       v.software === MASTODON,
@@ -329,6 +339,15 @@ const getInstanceFeatures = (instance: Instance) => {
     followRequests: any([
       v.software === MASTODON,
       (v.software === PLEROMA || v.software === AKKOMA),
+    ]),
+
+    /**
+     * Can follow hashtag and show tags in home timeline
+     * @see GET /api/v1/followed_tags
+     */
+    followTags: any([
+      v.software === MASTODON && gte(v.compatVersion, '4.0.0'),
+      v.software === AKKOMA,
     ]),
 
     /**
@@ -506,6 +525,7 @@ const getInstanceFeatures = (instance: Instance) => {
      */
     quotePosts: any([
       (v.software === PLEROMA || v.software === AKKOMA) && v.build === SOAPBOX && gte(v.version, '2.4.50'),
+      features.includes('quote_posting'),
       instance.feature_quote === true,
     ]),
 

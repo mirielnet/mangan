@@ -10,71 +10,28 @@ Moreover, Mangane already has a feature detection system allowing us to adapt th
 
 We are speaking about Akkoma here since we are planning to add Akkoma specific features to the project without breaking any existing compatibility.
 
+## Manifesto
+
+Mangane is a fork of an existing project driven by a fundamental disagreement regarding the opinions and actions of its maintainer. This manifesto serves as a declaration of our motivations and the principles that guide the development of Mangane.
+
+### Our Vision
+Mangane aims to provide a more accessible interface compared to the majority of existing software interfaces. We recognize that many platforms overlook the importance of user-friendliness and fail to incorporate familiar design patterns that users are accustomed to. By leveraging well-established user interface conventions, we strive to create an inclusive environment that welcomes users from diverse backgrounds and skill levels.
+
+### Supporting Akkoma and Promoting Sustainability
+One of the primary reasons Mangane embraces Akkoma is because of its alignment with our software's objectives. Akkoma has been chosen not only for its capabilities but also because it can operate efficiently on modest hardware configurations. This choice reflects our commitment to energy efficiency and sustainability, allowing users to engage with technology while minimizing their environmental impact.
+
+### Transparency and Accountability
+We understand the importance of demonstrating our good intentions and the integrity of our project. To that end, we invite interested parties to explore the following resources as evidence of our commitment to ethical practices:
+
+* [Manifesto of bdx.town (available in French)](https://bdx.town/about)
+* [Rules of bdx.town (available in French)](https://bdx.town/about/rules)
+* [Publicly accessible blocklist of bdx.town](https://bdx.town/api/v1/instance) (pleroma -> metadata -> federation -> mrf_simple -> reject)
+
+These resources provide insight into the principles upheld by the individuals involved in Mangane and showcase our dedication to creating a safe and respectful digital environment.
+
 ![UI Mixed](./docs/ui-mixed.png)
 ![UI Dark](./docs/ui-dark.png)
 ![UI Light](./docs/ui-light.png)
-
-## :rocket: Deploy on Pleroma/Akkoma
-
-Installing Mangane on an existing Pleroma or Akkoma instance is easy.
-Log in with SSH your server and follow those instructions depending on your configuration.
-
-### Download
-
-First you need to download Mangane on your server.
-
-#### For OTP install
-
-```
-/opt/pleroma/bin/pleroma_ctl frontend install mangane --ref dist --build-url https://github.com/BDX-town/Mangane/releases/latest/download/static.zip
-```
-*Note: The pleroma_ctl path may vary on your system, if you are using Akkoma it's probably in /opt/akkoma/bin/*
-
-#### For Mix/Source install
-
-```
-mix pleroma.frontend install mangane --ref dist --build-url https://github.com/BDX-town/Mangane/releases/latest/download/static.zip
-```
-
-#### With Admin-fe 
-
-If database configuration is enabled, you can also install Mangane from the Admin interface of Pleroma/Akkoma. 
-Just fill the form at Frontend/Available like this.
-
-![admin-fe](./docs/admin-ui-1.png)
-
-### Activation
-
-Then you need to activate the frontend so it will be available to your users.
-
-#### Config.exs
-
-Edit your configuration files to add/edit the `config :pleroma, :frontends` section like this 
-
-```
-config :pleroma, :frontends,
-  primary: %{
-    "name" => "mangane",
-    "ref" => "dist"
-  }
-```
-
-##### Admin-fe with database configuration enabled
-
-Just fill the form at Frontend/frontends/Primary like this.
-
-![admin-fe](./docs/admin-ui-2.png)
-
-
-**That's it!** :tada:
-
-**Mangane FE is now installed.**  
-The change will take effect immediately, just refresh your browser tab, and Mangane will replace the default Pleroma FE or Akkoma FE interface. 
-You may need to restart Pleroma/Akkoma for the change to take effect.
-
-## :elephant: Deploy on Mastodon
-
-See [Installing Mangane over Mastodon](./docs/administration/mastodon.md).
 
 ## How does it work?
 
@@ -83,7 +40,7 @@ Mangane is a [single-page application (SPA)](https://en.wikipedia.org/wiki/Singl
 It has a single HTML file, `index.html`, responsible only for loading the required JavaScript and CSS.
 It interacts with the backend through [XMLHttpRequest (XHR)](https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest).
 
-Here is a simplified example with Nginx:
+Here is a simplified configuration example with Nginx:
 
 ```nginx
 location /api {
@@ -96,10 +53,90 @@ location / {
 }
 ```
 
-(See [`mastodon.conf`](https://github.com/BDX-town/Mangane/blob/master/installation/mastodon.conf) for a full example.)
+(See [`mastodon.conf`](https://github.com/BDX-town/Mangane/blob/master/installation/mastodon.conf) file for a full example.)
 
 Mangane incorporates much of the [Mastodon API](https://docs.joinmastodon.org/methods/), [Pleroma API](https://api.pleroma.social/), and more.
 It detects features supported by the backend to provide the right experience for the backend.
+
+# :rocket: Deploy on Pleroma/Akkoma
+
+Installing Mangane on an existing Pleroma or Akkoma instance is easy.
+Log in with SSH your server and follow those instructions depending on your configuration.
+
+## Download
+
+First you need to download Mangane on your server.
+
+#### For OTP install
+
+```sh
+/opt/pleroma/bin/pleroma_ctl frontend install mangane --ref dist --build-url https://github.com/BDX-town/Mangane/releases/latest/download/static.zip
+```
+*Note: The pleroma_ctl path may vary on your system, if you are using Akkoma it's probably in /opt/akkoma/bin/*
+
+#### For Mix/Source install
+
+```sh
+mix pleroma.frontend install mangane --ref dist --build-url https://github.com/BDX-town/Mangane/releases/latest/download/static.zip
+```
+
+#### With Admin FE 
+
+If database configuration is enabled, you can also install Mangane from the Admin interface of Pleroma/Akkoma. 
+Just fill the form at Frontend/Available like this.
+
+![admin-fe](./docs/admin-ui-1.png)
+
+### Activation
+
+Then you need to activate the frontend so it will be available to your users.
+
+#### With Config.exs file
+
+Edit your configuration files to add/edit the `config :pleroma, :frontends` section like this 
+
+```
+config :pleroma, :frontends,
+  primary: %{
+    "name" => "mangane",
+    "ref" => "dist"
+  }
+```
+
+#### With Admin FE (database configuration enabled)
+
+Just fill the form at Frontend/frontends/Primary like this.
+
+![admin-fe](./docs/admin-ui-2.png)
+
+
+**That's it!** :tada:
+
+Mangane is now installed.
+The change will take effect immediately, just refresh your browser tab, and Mangane will replace the default Pleroma FE or Akkoma FE interface. 
+You may need to restart Pleroma/Akkoma for the change to take effect.
+
+If you notice some issue with UI colors, please take a look at the Troubleshooting section.
+
+## Install in other environments
+
+#### Yunohost server
+
+If you use Akkoma or Pleroma packaged application for [Yunohost](https://yunohost.org), a Debian system dedicated to self hosting, you can install Mangane from the command line `pleroma_ctl`) or with Pleroma’s admin interface (Admin FE). More instructionh can be found in [Installing on Yunohost](./docs/administration/yunohost.md) documentation page.
+
+#### Deploy on Mastodon
+
+Mangane is developed and tested only for Pleroma and Akkoma, this mean that there is _no_ explicit support to be installed as a frontend for a Mastodon instance.  If you want to try anyway, procede with caution. See the Soapbox (version 2) outdated documentation on [installing over Mastodon](./docs/administration/mastodon.md).
+
+# Upgrade
+
+To upgrade Mangane, run the install commands again, on top of actual version.
+
+```
+/opt/pleroma/bin/pleroma_ctl frontend install mangane --ref dist --build-url https://github.com/BDX-town/Mangane/releases/latest/download/static.zip
+```
+
+If you want, you can also upgrade from the admin interface (Admin FE), doing a _new_ installation.
 
 # Running locally
 
@@ -238,6 +275,19 @@ Customization details can be found in the [Customization documentation](docs/cus
 
 It's a [known issue](https://git.pleroma.social/pleroma/pleroma/-/issues/2768#note_97928) with the `exiftool` filter.
 To solve these upload problems, go to your admin-fe, search the upload section and remove `exiftool` from the enabled filters.
+
+## Messy colors / style configuration
+
+Akkoma recently changed their Content Security Policy (Content-Secutiry-Policy HTTP response header) to make it more strict.
+If you notice any issue with your UI style configuration, please update your HTTP server configuration to override Akkoma's CSP header so the `style-src` section is set to `'self' 'unsafe-inline';`
+
+Here is a example configuration for nginx:
+```
+# add style-src for mangane
+proxy_hide_header Content-Security-Policy;
+add_header Content-Security-Policy "upgrade-insecure-requests;script-src 'self';connect-src 'self' blob: https://example.com wss://example.com;media-src 'self' https:;img-src 'self' data: blob: https:;default-src 'none';base-uri 'self';frame-ancestors 'none';style-src 'self' 'unsafe-inline';font-src 'self';manifest-src 'self';" always;
+```
+*Please replace https://example.com with your own domain*
 
 # License & Credits
 

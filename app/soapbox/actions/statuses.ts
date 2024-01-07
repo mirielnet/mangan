@@ -47,6 +47,8 @@ const STATUS_TRANSLATE_FAIL = 'STATUS_TRANSLATE_FAIL';
 const STATUS_REVEAL = 'STATUS_REVEAL';
 const STATUS_HIDE   = 'STATUS_HIDE';
 
+const STATUS_APPLY_FILTERS = 'STATUS_APPLY_FILTERS';
+
 const statusExists = (getState: () => RootState, statusId: string) => {
   return (getState().statuses.get(statusId) || null) !== null;
 };
@@ -122,7 +124,7 @@ const editStatus = (id: string) => (dispatch: AppDispatch, getState: () => RootS
 
   api(getState).get(`/api/v1/statuses/${id}/source`).then(response => {
     dispatch({ type: STATUS_FETCH_SOURCE_SUCCESS });
-    dispatch(setComposeToStatus(status, response.data.text, response.data.spoiler_text, false));
+    dispatch(setComposeToStatus(status, response.data.text, response.data.spoiler_text, response.data.content_type));
     dispatch(openModal('COMPOSE'));
   }).catch(error => {
     dispatch({ type: STATUS_FETCH_SOURCE_FAIL, error });
@@ -353,6 +355,7 @@ export {
   STATUS_TRANSLATE_REQUEST,
   STATUS_TRANSLATE_SUCCESS,
   STATUS_TRANSLATE_FAIL,
+  STATUS_APPLY_FILTERS,
   createStatus,
   editStatus,
   fetchStatus,

@@ -22,6 +22,7 @@ const messages = defineMessages({
   settings: { id: 'tabs_bar.settings', defaultMessage: 'Settings' },
   direct: { id: 'column.direct', defaultMessage: 'Direct messages' },
   directory: { id: 'navigation_bar.profile_directory', defaultMessage: 'Profile directory' },
+  tags: { id: 'navigation_bar.tags', defaultMessage: 'Hashtags' },
 });
 
 /** Desktop sidebar with links to different views in the app. */
@@ -53,11 +54,15 @@ const SidebarNavigation = () => {
         });
       }
 
-      menu.push({
-        to: '/messages',
-        text: intl.formatMessage(messages.direct),
-        icon: require('@tabler/icons/mail.svg'),
-      });
+      // we only want to add this option is it's not already shown
+      // so only when chats are supported
+      if (features.chats) {
+        menu.push({
+          to: '/messages',
+          text: intl.formatMessage(messages.direct),
+          icon: require('@tabler/icons/mail.svg'),
+        });
+      }
 
       if (features.bookmarks) {
         menu.push({
@@ -75,7 +80,15 @@ const SidebarNavigation = () => {
         });
       }
 
-      if(features.profileDirectory) {
+      if (features.followTags) {
+        menu.push({
+          to: '/followed_hashtags',
+          text: intl.formatMessage(messages.tags),
+          icon: require('@tabler/icons/hash.svg'),
+        });
+      }
+
+      if (features.profileDirectory) {
         menu.push({
           to: '/directory',
           text: intl.formatMessage(messages.directory),
@@ -131,7 +144,7 @@ const SidebarNavigation = () => {
         <SidebarNavigationLink
           to='/messages'
           icon={require('@tabler/icons/mail.svg')}
-          text={<FormattedMessage id='navigation.direct_messages' defaultMessage='Messages' />}
+          text={<FormattedMessage id='column.direct' defaultMessage='Direct messages' />}
         />
       );
     }

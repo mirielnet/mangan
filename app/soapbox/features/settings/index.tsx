@@ -7,6 +7,7 @@ import { fetchMfa } from 'soapbox/actions/mfa';
 import List, { ListItem } from 'soapbox/components/list';
 import { Card, CardBody, CardHeader, CardTitle, Column } from 'soapbox/components/ui';
 import { useAppSelector, useOwnAccount } from 'soapbox/hooks';
+import { ConfigDB } from 'soapbox/utils/config_db';
 import { getFeatures } from 'soapbox/utils/features';
 
 import Preferences from '../preferences';
@@ -32,6 +33,9 @@ const messages = defineMessages({
   domainBlocks: { id: 'navigation_bar.domain_blocks', defaultMessage: 'Hidden domains' },
   mutes: { id: 'navigation_bar.mutes', defaultMessage: 'Muted users' },
   filters: { id: 'navigation_bar.filters', defaultMessage: 'Muted words' },
+  backups: { id: 'column.backups', defaultMessage: 'Backups' },
+  importData: { id: 'navigation_bar.import_data', defaultMessage: 'Import data' },
+  exportData: { id: 'column.export_data', defaultMessage: 'Export data' },
 });
 
 /** User settings page. */
@@ -41,6 +45,7 @@ const Settings = () => {
   const intl = useIntl();
 
   const mfa = useAppSelector((state) => state.security.get('mfa'));
+  const configuration = useAppSelector((state) => state.admin.get('configs'));
   const features = useAppSelector((state) => getFeatures(state.instance));
   const account = useOwnAccount();
 
@@ -52,6 +57,9 @@ const Settings = () => {
   const navigateToDeleteAccount = () => history.push('/settings/account');
   const navigateToMoveAccount = () => history.push('/settings/migration');
   const navigateToAliases = () => history.push('/settings/aliases');
+  const navigateToBackups = () => history.push('/settings/backups');
+  const navigateToImportData = () => history.push('/settings/import');
+  const navigateToExportData = () => history.push('/settings/export');
 
   const navigateToBlocks = () => history.push('/blocks');
   const navigateToMutes = () => history.push('/mutes');
@@ -59,6 +67,7 @@ const Settings = () => {
   const navigateToFilters = () => history.push('/filters');
 
   const isMfaEnabled = mfa.getIn(['settings', 'totp']);
+  const isLdapEnabled = React.useMemo(() => ConfigDB.find(configuration, ':pleroma', ':ldap')?.get('value').find((e) => e.get('tuple').get(0) === ':enabled')?.getIn(['tuple', 1]), [configuration]);
 
   useEffect(() => {
     dispatch(fetchMfa());
@@ -111,7 +120,11 @@ const Settings = () => {
                 {features.security && (
                   <>
                     <ListItem label={intl.formatMessage(messages.changeEmail)} onClick={navigateToChangeEmail} />
-                    <ListItem label={intl.formatMessage(messages.changePassword)} onClick={navigateToChangePassword} />
+                    {
+                      !isLdapEnabled && (
+                        <ListItem label={intl.formatMessage(messages.changePassword)} onClick={navigateToChangePassword} />
+                      )
+                    }
                     <ListItem label={intl.formatMessage(messages.configureMfa)} onClick={navigateToMfa}>
                       {isMfaEnabled ?
                         intl.formatMessage(messages.mfaEnabled) :
@@ -143,14 +156,27 @@ const Settings = () => {
 
             <CardBody>
               <List>
-                {features.security && (
-                  <ListItem label={intl.formatMessage(messages.deleteAccount)} onClick={navigateToDeleteAccount} />
+                {features.importData && (
+                  <ListItem label={intl.formatMessage(messages.importData)} onClick={navigateToImportData} />
                 )}
+
+                {features.exportData && (
+                  <ListItem label={intl.formatMessage(messages.exportData)} onClick={navigateToExportData} />
+                )}
+
+                {features.backups && (
+                  <ListItem label={intl.formatMessage(messages.backups)} onClick={navigateToBackups} />
+                )}
+
                 {features.federating && (features.accountMoving ? (
                   <ListItem label={intl.formatMessage(messages.accountMigration)} onClick={navigateToMoveAccount} />
                 ) : features.accountAliases && (
                   <ListItem label={intl.formatMessage(messages.accountAliases)} onClick={navigateToAliases} />
                 ))}
+
+                {features.security && (
+                  <ListItem label={intl.formatMessage(messages.deleteAccount)} onClick={navigateToDeleteAccount} />
+                )}
               </List>
             </CardBody>
           </>
