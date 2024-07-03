@@ -150,13 +150,13 @@ cd Mangane
 Ensure that Node.js and Yarn are installed, then install dependencies:
 
 ```sh
-yarn
+pnpm i --frozen-lockfile
 ```
 
 Finally, run the dev server:
 
 ```sh
-yarn dev
+pnpm run dev
 ```
 
 **That's it!** :tada:
