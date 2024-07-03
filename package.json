@@ -16,18 +16,18 @@
     "url": "https://github.com/BDX-town/Mangane/issues"
   },
   "scripts": {
-    "start": "npx webpack-dev-server",
-    "dev": "npm run start",
-    "build": "npx webpack",
-    "jsdoc": "npx jsdoc -c jsdoc.conf.js",
-    "manage:translations": "node ./webpack/translationRunner.js",
-    "test": "npx cross-env NODE_ENV=test npx jest",
-    "test:coverage": "${npm_execpath} run test --coverage",
-    "test:all": "${npm_execpath} run test:coverage && ${npm_execpath} run lint",
-    "lint": "${npm_execpath} run lint:js && ${npm_execpath} run lint:sass",
-    "lint:js": "npx eslint --ext .js,.jsx,.ts,.tsx . --cache",
-    "lint:sass": "npx stylelint app/styles/**/*.scss",
-    "prepare": "husky install"
+    "start": "pnpm webpack-dev-server",
+    "dev": "pnpm start",
+    "build": "pnpm webpack",
+    "jsdoc": "pnpm jsdoc -c jsdoc.conf.js",
+    "manage:translations": "pnpm node ./webpack/translationRunner.js",
+    "test": "pnpm cross-env NODE_ENV=test pnpm jest",
+    "test:coverage": "pnpm run test --coverage",
+    "test:all": "pnpm run test:coverage && pnpm run lint",
+    "lint": "pnpm run lint:js && pnpm run lint:sass",
+    "lint:js": "pnpm eslint --ext .js,.jsx,.ts,.tsx . --cache",
+    "lint:sass": "pnpm stylelint app/styles/**/*.scss",
+    "prepare": "pnpm husky install"
   },
   "license": "AGPL-3.0-or-later",
   "browserslist": [
@@ -238,5 +238,6 @@
     "ts-jest": "^28.0.5",
     "webpack-dev-server": "^4.9.1",
     "yargs": "^16.0.3"
-  }
+  },
+  "packageManager": "pnpm@9.4.0+sha512.f549b8a52c9d2b8536762f99c0722205efc5af913e77835dbccc3b0b0b2ca9e7dc8022b78062c17291c48e88749c70ce88eb5a74f1fa8c4bf5e18bb46c8bd83a"
 }
